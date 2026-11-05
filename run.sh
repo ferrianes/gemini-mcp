@@ -11,8 +11,8 @@ CDP_PORT="${GEMINI_MCP_CDP_PORT:-9333}"
 if ! curl -s --max-time 1 "http://127.0.0.1:${CDP_PORT}/json/version" >/dev/null 2>&1; then
     xvfb-run -a -s "-screen 0 1920x1080x24" /usr/bin/brave-browser \
         --remote-debugging-port="${CDP_PORT}" \
-        --user-data-dir="/home/ferrianes/.config/BraveSoftware/Brave-Browser" \
-        --profile-directory="Profile 1" \
+        --user-data-dir="${BRAVE_USER_DATA_DIR:-$HOME/.config/BraveSoftware/Brave-Browser}" \
+        --profile-directory="${BRAVE_PROFILE_DIR:-Profile 1}" \
         --no-first-run \
         --no-default-browser-check \
         "https://gemini.google.com/app?hl=en" >/dev/null 2>&1 &
