@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
 
@@ -24,7 +25,7 @@ if ! curl -s --max-time 1 "http://127.0.0.1:${CDP_PORT}/json/version" >/dev/null
     done
 fi
 
-cd /home/ferrianes/Code/gemini-mcp
+cd "$DIR"
 export GEMINI_MCP_BROWSER="/usr/bin/brave-browser"
 export GEMINI_MCP_CDP_PORT="${CDP_PORT}"
 exec node dist/index.js
