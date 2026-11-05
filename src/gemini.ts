@@ -186,8 +186,16 @@ export class GeminiDriver {
       await this.switchModel(opts.model, opts.thinking_level);
     }
 
-    const editor = await page.waitForSelector(".ql-editor", { timeout: 15000 });
-    if (!editor) throw new Error("Could not find Gemini message editor (.ql-editor)");
+    const editor = await page.waitForSelector(".ql-editor", { timeout: 15000 }).catch(() => null);
+    if (!editor) {
+      const isSignedOut = await page.$('a[href*="accounts.google.com"], a:has-text("Sign in"), button:has-text("Sign in")');
+      if (isSignedOut) {
+        throw new Error(
+          "Not signed in to Google. Please launch the browser with your profile and sign in to gemini.google.com first."
+        );
+      }
+      throw new Error("Could not find Gemini message editor (.ql-editor). Make sure gemini.google.com is accessible.");
+    }
 
     // Type prompt
     await editor.click();

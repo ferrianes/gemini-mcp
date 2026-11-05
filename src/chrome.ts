@@ -38,12 +38,22 @@ export function browserExecutable(): string {
   return p;
 }
 
+function getDefaultUserDataDir(): string {
+  if (process.platform === "darwin") {
+    return join(homedir(), "Library", "Application Support", "BraveSoftware", "Brave-Browser");
+  }
+  if (process.platform === "win32") {
+    return join(process.env.LOCALAPPDATA ?? join(homedir(), "AppData", "Local"), "BraveSoftware", "Brave-Browser", "User Data");
+  }
+  return join(homedir(), ".config", "BraveSoftware", "Brave-Browser");
+}
+
 export async function launchBrowser(): Promise<void> {
   const exe = browserExecutable();
-  const userDataDir = process.env.GEMINI_MCP_USER_DATA_DIR ?? join(homedir(), ".config/BraveSoftware/Brave-Browser");
+  const userDataDir = process.env.GEMINI_MCP_USER_DATA_DIR ?? getDefaultUserDataDir();
   const profileDir = process.env.GEMINI_MCP_PROFILE ?? "Profile 1";
 
-  // Launch under xvfb if display is not set or running on Linux
+  // Launch under xvfb if display is not set or running headless on Linux
   const args = [
     `--remote-debugging-port=${CDP_PORT}`,
     `--user-data-dir=${userDataDir}`,
@@ -54,11 +64,20 @@ export async function launchBrowser(): Promise<void> {
   ];
 
   let child;
-  if (process.platform === "linux" && !process.env.DISPLAY && existsSync("/usr/bin/xvfb-run")) {
+  const xvfbPath = ["/usr/bin/xvfb-run", "/bin/xvfb-run"].find((p) => existsSync(p));
+  if (process.platform === "linux" && !process.env.DISPLAY && xvfbPath) {
     child = spawn(
-      "xvfb-run",
-      ["-a", "-s", "-screen 0 1920x1080x24", "env", "XDG_CURRENT_DESKTOP=X-Cinnamon", "DESKTOP_SESSION=cinnamon", exe, ...args],
-      { detached: true, stdio: "ignore" }
+      xvfbPath,
+      ["-a", "-s", "-screen 0 1920x1080x24", exe, ...args],
+      {
+        detached: true,
+        stdio: "ignore",
+        env: {
+          ...process.env,
+          XDG_CURRENT_DESKTOP: process.env.XDG_CURRENT_DESKTOP ?? "X-Cinnamon",
+          DESKTOP_SESSION: process.env.DESKTOP_SESSION ?? "cinnamon",
+        },
+      }
     );
   } else {
     child = spawn(exe, args, { detached: true, stdio: "ignore" });
