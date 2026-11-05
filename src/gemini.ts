@@ -1,5 +1,5 @@
 import type { Page } from "playwright-core";
-import { getGeminiPage, GEMINI_URL } from "./chrome.js";
+import { getGeminiPage, getBrowser, GEMINI_URL, GEMINI_USAGE_URL } from "./chrome.js";
 
 export interface GeminiStatus {
   connected: boolean;
@@ -7,6 +7,18 @@ export interface GeminiStatus {
   active_model: string;
   thinking_level?: string;
   models_available: string[];
+}
+
+export interface UsageMetric {
+  percentage: string;
+  resets_at: string;
+}
+
+export interface GeminiUsageInfo {
+  plan: string;
+  current_usage: UsageMetric;
+  weekly_limit: UsageMetric;
+  raw_summary: string;
 }
 
 export interface ChatOptions {
@@ -39,6 +51,68 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export class GeminiDriver {
   private async getPage(): Promise<Page> {
     return await getGeminiPage();
+  }
+
+  async getUsage(): Promise<GeminiUsageInfo> {
+    const browser = await getBrowser();
+    const context = browser.contexts()[0];
+    if (!context) throw new Error("No browser context found via CDP.");
+
+    const page = await context.newPage();
+    try {
+      await page.goto(GEMINI_USAGE_URL, {
+        waitUntil: "domcontentloaded",
+        timeout: 25000,
+      });
+
+      await sleep(2000);
+
+      const hasAccount = await page.$('a[aria-label*="Google Account"]');
+      const signInBtn = await page.$('a[href*="ServiceLogin"], a:has-text("Sign in"), button:has-text("Sign in")');
+      if (!hasAccount && signInBtn) {
+        throw new Error("Not signed in to Google. Please sign in to gemini.google.com in your browser profile first.");
+      }
+
+      return await page.evaluate(() => {
+        const root = document.querySelector(".content-container") || document.body;
+        const leaves = Array.from(root.querySelectorAll("*"))
+          .filter((el) => el.children.length === 0 && ((el as HTMLElement).innerText || "").trim().length > 0)
+          .map((el) => ((el as HTMLElement).innerText || "").trim());
+
+        let plan = "Free";
+        if (leaves.some((t) => t.toUpperCase() === "PRO")) plan = "Pro";
+        else if (leaves.some((t) => t.toUpperCase() === "ULTRA")) plan = "Ultra";
+
+        const percentMatches = leaves.filter((t) => /^\d+%\s*(used|digunakan)/i.test(t));
+        const currentPercentage = percentMatches[0] || "N/A";
+        const weeklyPercentage = percentMatches[1] || "N/A";
+
+        const resetMatches = leaves.filter((t) => /^(resets|direset)/i.test(t));
+        const currentReset =
+          resetMatches.find((t) => !/\b(nov|dec|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|pada)\b/i.test(t)) ||
+          resetMatches[0] ||
+          "N/A";
+        const weeklyReset =
+          resetMatches.find((t) => /\b(nov|dec|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|pada)\b/i.test(t)) ||
+          resetMatches[1] ||
+          "N/A";
+
+        return {
+          plan,
+          current_usage: {
+            percentage: currentPercentage,
+            resets_at: currentReset,
+          },
+          weekly_limit: {
+            percentage: weeklyPercentage,
+            resets_at: weeklyReset,
+          },
+          raw_summary: leaves.join(" | "),
+        };
+      });
+    } finally {
+      await page.close().catch(() => {});
+    }
   }
 
   async getStatus(): Promise<GeminiStatus> {
@@ -188,8 +262,9 @@ export class GeminiDriver {
 
     const editor = await page.waitForSelector(".ql-editor", { timeout: 15000 }).catch(() => null);
     if (!editor) {
-      const isSignedOut = await page.$('a[href*="accounts.google.com"], a:has-text("Sign in"), button:has-text("Sign in")');
-      if (isSignedOut) {
+      const hasAccount = await page.$('a[aria-label*="Google Account"]');
+      const signInBtn = await page.$('a[href*="ServiceLogin"], a:has-text("Sign in"), button:has-text("Sign in")');
+      if (!hasAccount && signInBtn) {
         throw new Error(
           "Not signed in to Google. Please launch the browser with your profile and sign in to gemini.google.com first."
         );

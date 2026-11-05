@@ -22,6 +22,7 @@ Built specifically to unlock web-exclusive capabilities—including **4 Argon**,
   - `Medium` (Balanced depth)
   - `High` (Extra thorough reasoning)
 - **Local File Uploads**: Upload images, documents, and code files directly via `gemini_upload_and_ask`.
+- **Usage & Quota Monitoring**: Check live consumption %, weekly limits, and reset timestamps via `gemini_usage`.
 - **Browser Profile Isolation**: Defaults to a dedicated secondary profile (`Profile 1`) to ensure your main personal profile remains untouched.
 - **Headless & Headed Support**: Automatically detects running CDP instances (default: `9333`), launches headless via `xvfb-run` on Linux servers, or opens normally on desktop environments (Linux, macOS, Windows).
 
@@ -32,6 +33,7 @@ Built specifically to unlock web-exclusive capabilities—including **4 Argon**,
 | Tool | Description |
 | :--- | :--- |
 | `gemini_status` | Returns connection state, signed-in Google account, active model, and thinking level. |
+| `gemini_usage` | Checks real-time quota usage limits from `gemini.google.com/usage`: plan tier, current usage %, reset time, and weekly limit. |
 | `gemini_chat` | Sends a prompt to Gemini with optional model selection, thinking level, and chat reset. Waits for streaming to complete. |
 | `gemini_switch_model` | Changes the active model or adjusts thinking level without sending a message. |
 | `gemini_new_chat` | Resets the session and opens a fresh conversation. |

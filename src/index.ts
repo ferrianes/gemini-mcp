@@ -35,6 +35,18 @@ server.registerTool(
 );
 
 server.registerTool(
+  "gemini_usage",
+  {
+    title: "Gemini Quota & Usage Limits",
+    description:
+      "Check Gemini quota and usage limits from gemini.google.com/usage, including current usage percentage, reset time, weekly limit, and active plan (Pro / Ultra / Free).",
+    inputSchema: z.object({}),
+    annotations: { readOnlyHint: true, openWorldHint: true },
+  },
+  () => reply(driver.getUsage()),
+);
+
+server.registerTool(
   "gemini_chat",
   {
     title: "Chat with Gemini",

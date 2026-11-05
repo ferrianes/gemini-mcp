@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { chromium, type Browser, type Page } from "playwright-core";
 
 export const GEMINI_URL = "https://gemini.google.com/app?hl=en";
+export const GEMINI_USAGE_URL = "https://gemini.google.com/usage?hl=en";
 export const GEMINI_HOSTS = /^https:\/\/gemini\.google\.com/;
 
 export const CDP_PORT = Number(process.env.GEMINI_MCP_CDP_PORT ?? process.env.FLOW_MCP_CDP_PORT ?? 9333);
