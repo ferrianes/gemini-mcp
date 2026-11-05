@@ -86,28 +86,49 @@ open -a "Brave Browser" --args --profile-directory="Profile 1" "https://gemini.g
 
 ## MCP Configuration
 
-Add `gemini-mcp` to your MCP client configuration:
+Add `gemini-mcp` to your MCP client configuration (Claude Desktop, Cursor, Hermes Agent, etc.):
 
-### Claude Desktop (`claude_desktop_config.json`)
+### Option 1: Direct via `npx` (No manual clone needed)
+
+Using GitHub repository directly:
+
+```json
+{
+  "mcpServers": {
+    "gemini": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "github:ferrianes/gemini-mcp"
+      ]
+    }
+  }
+}
+```
+
+Or via npm (if using the published `@ferrianes/gemini-mcp` package):
+
+```json
+{
+  "mcpServers": {
+    "gemini": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@ferrianes/gemini-mcp"
+      ]
+    }
+  }
+}
+```
+
+### Option 2: Local Script (`run.sh`)
 
 ```json
 {
   "mcpServers": {
     "gemini": {
       "command": "/path/to/gemini-mcp/run.sh"
-    }
-  }
-}
-```
-
-Or execute directly via Node:
-
-```json
-{
-  "mcpServers": {
-    "gemini": {
-      "command": "node",
-      "args": ["/path/to/gemini-mcp/dist/index.js"]
     }
   }
 }
