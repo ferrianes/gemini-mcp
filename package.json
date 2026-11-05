@@ -1,12 +1,11 @@
 {
   "name": "@ferrianes/gemini-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Local MCP server that drives gemini.google.com with Brave Profile 1 automation (supporting 4 Argon and Pro models)",
   "main": "dist/index.js",
   "type": "module",
   "bin": {
-    "gemini-mcp": "dist/index.js",
-    "@ferrianes/gemini-mcp": "dist/index.js"
+    "gemini-mcp": "dist/index.js"
   },
   "files": [
     "dist"
@@ -20,7 +19,13 @@
     "prepublishOnly": "npm run build",
     "start": "node dist/index.js"
   },
-  "keywords": ["mcp", "gemini", "argon", "playwright", "brave"],
+  "keywords": [
+    "mcp",
+    "gemini",
+    "argon",
+    "playwright",
+    "brave"
+  ],
   "author": "Ferriannn",
   "license": "MIT",
   "dependencies": {
