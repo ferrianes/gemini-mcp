@@ -9,10 +9,14 @@ Built specifically to unlock web-exclusive capabilities—including **4 Argon**,
 ## Features
 
 - **Model Switching**:
-  - `4 Argon` (*Complex tasks / Deep reasoning*)
+  - `4 Argon` (*Complex tasks / Deep reasoning*) — **Requires Gemini Advanced / Google One AI Premium (Pro) plan**
   - `3.1 Pro` (*Advanced reasoning*)
   - `3.8 Flash` (*All-around everyday tasks*)
   - `3.5 Flash-Lite` (*Fastest responses*)
+
+> [!NOTE]
+> **Google Plan Requirement for 4 Argon**:
+> To unlock and use **4 Argon**, your signed-in Google account must have an active **Google One AI Premium / Gemini Advanced (Pro)** subscription. Free-tier Google accounts will only have access to `3.8 Flash` and `3.5 Flash-Lite`.
 - **Thinking Depth**:
   - `Low` (Quick & concise)
   - `Medium` (Balanced depth)
@@ -37,9 +41,10 @@ Built specifically to unlock web-exclusive capabilities—including **4 Argon**,
 
 ## Prerequisites
 
-1. **Node.js**: v18.0.0 or higher.
-2. **Browser**: [Brave Browser](https://brave.com/) (recommended) or Google Chrome.
-3. **(Optional - Linux Headless)**: If running on a headless Linux server without a display:
+1. **Google Account with Pro Plan**: To access **4 Argon**, your account must be subscribed to **Gemini Advanced / Google One AI Premium (Pro)**.
+2. **Node.js**: v18.0.0 or higher.
+3. **Browser**: [Brave Browser](https://brave.com/) (recommended) or Google Chrome.
+4. **(Optional - Linux Headless)**: If running on a headless Linux server without a display:
    ```bash
    sudo apt update && sudo apt install -y xvfb
    ```
