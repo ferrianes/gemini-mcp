@@ -46,7 +46,7 @@ Add to your `hermes` config or Claude Desktop config:
 {
   "mcpServers": {
     "gemini": {
-      "command": "/home/ferrianes/Code/gemini-mcp/run.sh"
+      "command": "/home/ferrianes/Code/mcp/gemini-mcp/run.sh"
     }
   }
 }
